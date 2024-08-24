@@ -3,37 +3,38 @@ package main
 import (
 	"fmt"
 	"measurement/forms"
+
+	"github.com/charmbracelet/huh"
 )
 
 func main() {
+	isLoop := true
 
-	var (
-		result      any
-		errorResult error
-	)
+	for {
+		var again bool = true
 
-	var initialFormValue = forms.InitialForm()
-	switch initialFormValue {
-	case "Temprature":
-		result, errorResult = forms.TempratureForm()
-		if errorResult != nil {
-			fmt.Println(errorResult)
+		result, error := forms.TempratureForm()
+
+		if error != nil {
+			fmt.Println(error)
 			break
 		}
 
 		fmt.Println(result)
-	default:
-		fmt.Println("Program closed")
+
+		confirmForm := huh.NewForm(
+			huh.NewGroup(
+				huh.NewConfirm().
+					Title("Want to do it again?").
+					Value(&again),
+			),
+		).WithTheme(huh.ThemeCatppuccin())
+
+		confirmForm.Run()
+
+		if !isLoop || !again {
+			fmt.Println("See you again!")
+			break
+		}
 	}
-
-	// * Loop, do it later
-	// isLoop := true
-
-	// for {
-
-	// 	if !isLoop {
-	// 		fmt.Println("See you again!")
-	// 		break
-	// 	}
-	// }
 }
